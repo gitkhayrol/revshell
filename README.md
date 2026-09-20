@@ -11,7 +11,7 @@ then serves a live **web dashboard** where every payload is generated with your 
 
 <img src="https://img.shields.io/badge/python-3-00ff41?style=for-the-badge&logo=python&logoColor=white">
 <img src="https://img.shields.io/badge/dependencies-0-00ff41?style=for-the-badge">
-<img src="https://img.shields.io/badge/version-2.2-00e5ff?style=for-the-badge">
+<img src="https://img.shields.io/badge/version-2.3-00e5ff?style=for-the-badge">
 <img src="https://img.shields.io/badge/author-madtiger-ff2e4d?style=for-the-badge">
 <img src="https://img.shields.io/badge/telegram-DevidLuice-00e5ff?style=for-the-badge&logo=telegram&logoColor=white">
 
